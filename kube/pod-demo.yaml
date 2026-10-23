@@ -1,0 +1,25 @@
+# Manifiesto de Kubernetes que Podman puede ejecutar directamente:
+#   podman kube play kube/pod-demo.yaml
+# El mismo archivo serviria en un cluster real de Kubernetes.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: expo-pod-kube
+  labels:
+    app: expo-podman
+spec:
+  containers:
+    # Contenedor 1: la aplicacion web (imagen construida localmente)
+    - name: web
+      image: localhost/expo-app:1.0
+      env:
+        - name: REDIS_HOST
+          value: localhost
+      ports:
+        - containerPort: 5000
+          hostPort: 8081
+    # Contenedor 2: la base de datos Redis
+    - name: redis
+      image: docker.io/library/redis:7-alpine
+      ports:
+        - containerPort: 6379

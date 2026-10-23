@@ -1,0 +1,23 @@
+# Containerfile = el equivalente a un Dockerfile (Podman acepta ambos nombres).
+
+# 1. Imagen base. Podman prefiere nombres completos: registro/usuario/imagen:tag
+FROM docker.io/library/python:3.12-slim
+
+# 2. Carpeta de trabajo dentro de la imagen
+WORKDIR /app
+
+# 3. Instalar dependencias primero (aprovecha la cache de capas)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 4. Copiar el codigo de la aplicacion
+COPY app.py .
+
+# 5. Buena practica: no ejecutar como root dentro del contenedor
+RUN useradd --create-home appuser
+USER appuser
+ENV USER=appuser
+
+# 6. Puerto que usa la app y comando de arranque
+EXPOSE 5000
+CMD ["python", "app.py"]
